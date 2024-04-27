@@ -84,6 +84,3 @@ fill(235, 95, 90);
 ellipse(600,260,16,7);
 
 }
-void mouseClicked() {
-  println(mouseX, mouseY);
-}
