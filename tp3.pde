@@ -1,7 +1,12 @@
+//Materia: Materia IPMI //Comision 5 //TP3: Dinamica Circolare//Artista: Marina Apollonio //Alumna: Ailu Avanzini  //Legajo: (94717/7)  //Profesor: Tobias Albirosa
+//Link al Video Tutorial: https://www.youtube.com/watch?v=1lgV-5rHTI8&ab_channel=AngelaMart%C3%ADnez
+
+// Declaración de variables
 int numCircles = 30; // Número de círculos
 float maxDiameter = 400; // Diámetro máximo de los círculos
 boolean interactive = false; // Variable para activar/desactivar la interactividad
 PImage Circle;
+boolean useColorPalette = false; // Variable para activar/desactivar el uso de la paleta de colores
 
 void setup() {
   size(800, 400);
@@ -25,7 +30,11 @@ void drawInteractiveCircles(boolean inclinados) {
       x += i * 2; // Inclinación hacia arriba a la derecha
       y -= i * 2; // Inclinación hacia arriba a la derecha
     }
-    drawCircle(x, y, diameter, i, inclinados && i == numCircles - 1);
+    if (i != numCircles - 1) {
+      drawCircle(x, y, diameter, i, false);
+    } else {
+      drawCircle(x, y, diameter, i, true);
+    }
     
     // Añado un patrón adicional con otro for
     for (int j = 0; j < 5; j++) {
@@ -39,21 +48,47 @@ void drawInteractiveCircles(boolean inclinados) {
 
 void drawCircle(float x, float y, float diameter, int index, boolean last) {
   // Función que dibuja un círculo con color alternante
-  if (index % 2 == 0) {
-    fill(0);
+  if (useColorPalette) {
+    fill(getColorFromPalette(index));
   } else {
-    fill(255);
+    if (index % 2 == 0) {
+      fill(0);
+    } else {
+      fill(255);
+    }
   }
-    //ESTO ME QUEDO COLGADO PQ INTENTABA HACER QUE EL CIRCULO BLANCO MIRE HACIA ABAJO
 
   if (last) {
     pushMatrix();
-    translate(x, y);
-    rotate(-QUARTER_PI); // Rotar hacia abajo a la izquierda
+    if (interactive) {
+      // Centra el último círculo dentro del patrón interactivo
+      translate(x, y);
+    } else {
+      // Inclinación del último círculo hacia abajo a la izquierda
+      translate(x - 5, y + 5); 
+      rotate(-QUARTER_PI); // Rotar hacia abajo a la izquierda (-45 grados)
+    }
     ellipse(0, 0, diameter, diameter);
     popMatrix();
   } else {
     ellipse(x, y, diameter, diameter);
+  }
+}
+
+// Función que devuelve un color de la paleta en función del índice
+color getColorFromPalette(int index) {
+  switch (index % 10) {
+    case 0: return color(135, 206, 250); // Light Sky Blue (Celeste Cielo)
+    case 1: return color(0, 255, 255);   // Cyan (Cian)
+    case 2: return color(64, 224, 208);  // Turquoise (Turquesa)
+    case 3: return color(0, 128, 128);   // Teal (Verde Azulado)
+    case 4: return color(75, 0, 130);    // Indigo
+    case 5: return color(238, 130, 238); // Violet(a)
+    case 6: return color(0, 0, 255);     // Blue (Azul)
+    case 7: return color(0, 255, 0);     // Lime(a) (Verde)
+    case 8: return color(255, 255, 255); // White (Blanco)
+    case 9: return color(255, 0, 255);   // Magenta
+    default: return color(255);          // White as default
   }
 }
 
@@ -82,9 +117,15 @@ void mousePressed() {
   }
 }
 
+// Función para reiniciar al estado con la interactividad desactivada al presionar la tecla 'r'
 void keyPressed() {
   if (key == 'r' || key == 'R') {
     interactive = false;
+    useColorPalette = false; // Volver a blanco y negro
     drawInteractiveCircles(true); // Muestra los círculos inclinados al reiniciar
+  } else if (key == ' ') {
+    useColorPalette = true; // Activar el uso de la paleta de colores
+    drawInteractiveCircles(interactive); // Redibujar los círculos con la paleta de colores
   }
 }
+
